@@ -50,7 +50,7 @@ jobs:
             const issueBody = process.env.ISSUE_BODY || '';
             const issueTitle = process.env.ISSUE_TITLE || `Issue #${issueNumber}`;
             const date = (process.env.ISSUE_CREATED_AT || '').slice(0, 10);
-            const isbnMatch = issueBody.match(/^\| ISBN \| (.*?) \|$/m);
+            const isbnMatch = issueBody.match(/^- ISBN：(.*?)$/m);
             const isbn = isbnMatch && isbnMatch[1] !== '<!-- 請填寫 -->'
               ? isbnMatch[1].trim()
               : 'unknown';
