@@ -20,7 +20,7 @@ Development rules live in `AGENTS.md`.
 
 | Slug | Issue Template | Reusable Workflow | Markdown Template | Caller Example | Notes |
 |------|----------------|-------------------|-------------------|----------------|-------|
-| `reading-note` | `.github/ISSUE_TEMPLATE/reading-note.md` | `.github/workflows/create-reading-note.yml` | `.github/templates/reading-note.md` | `.github/examples/reading-note-caller.yml` | Creates `source/_posts/note_{isbn}.md` in the target repo |
+| `reading-note` | `.github/ISSUE_TEMPLATE/reading-note.md` | `.github/workflows/create-reading-note.yml` | `.github/templates/reading-note.md` | `.github/examples/reading-note-caller.yml` | Creates `source/_posts/note_{isbn}.md` in the target repo and runs when the issue has the `reflection` label |
 
 ## Standalone Templates
 
@@ -33,7 +33,7 @@ These files do not currently belong to an issue-driven automation family:
 ## Reading Note Flow
 
 1. Create an issue from `.github/ISSUE_TEMPLATE/reading-note.md`.
-2. Add or keep the `reading-note` label on the issue.
+2. Add or keep the `reflection` label on the issue.
 3. In the target repository, use `.github/examples/reading-note-caller.yml` as `.github/workflows/reading-note.yml`.
 4. The caller triggers `.github/workflows/create-reading-note.yml`.
 5. The reusable workflow reads `.github/templates/reading-note.md` and generates `source/_posts/note_{isbn}.md`.

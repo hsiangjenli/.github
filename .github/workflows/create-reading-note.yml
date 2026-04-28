@@ -21,7 +21,7 @@ on:
 
 jobs:
   create-branch-and-file:
-    if: contains(inputs.issue_labels, 'reading-note')
+    if: contains(inputs.issue_labels, 'reflection')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -29,7 +29,7 @@ jobs:
     env:
       BRANCH_PREFIX: reading/issue-
       NOTE_DIRECTORY: source/_posts
-      NOTE_TAG: reading-note
+      NOTE_TAG: reflection
       NOTE_AUTHOR: Hsiang-Jen Li
       TEMPLATE_OWNER: hsiangjenli
       TEMPLATE_REPO: .github
