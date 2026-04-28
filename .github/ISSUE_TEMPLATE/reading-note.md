@@ -2,7 +2,7 @@
 name: 📚 閱讀心得
 about: 記錄閱讀心得，文章以 PR linked issue 方式提交
 title: '<書名>'
-labels: reading-note, cathay
+labels: reflection, cathay
 assignees: hsiangjenli
 ---
 
