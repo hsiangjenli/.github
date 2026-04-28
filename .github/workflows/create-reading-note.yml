@@ -36,9 +36,9 @@ jobs:
       TEMPLATE_PATH: .github/templates/reading-note.md
 
     steps:
-      - name: Create branch and note file
+      - name: Create linked branch and note file
         id: prepare
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           ISSUE_BODY: ${{ inputs.issue_body }}
           ISSUE_CREATED_AT: ${{ inputs.issue_created_at }}
@@ -85,18 +85,41 @@ jobs:
               repo: context.repo.repo,
             });
 
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+            });
+
             const { data: baseRef } = await github.rest.git.getRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: `heads/${repository.default_branch}`,
             });
 
-            await github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: `refs/heads/${branch}`,
-              sha: baseRef.object.sha,
-            });
+            try {
+              await github.graphql(
+                `mutation CreateLinkedBranch($input: CreateLinkedBranchInput!) {
+                  createLinkedBranch(input: $input) {
+                    linkedBranch {
+                      id
+                    }
+                  }
+                }`,
+                {
+                  input: {
+                    issueId: issue.node_id,
+                    name: branch,
+                    oid: baseRef.object.sha,
+                    repositoryId: repository.node_id,
+                  },
+                },
+              );
+            } catch (error) {
+              if (!String(error.message || error).includes('already exists')) {
+                throw error;
+              }
+            }
 
             await github.rest.repos.createOrUpdateFileContents({
               owner: context.repo.owner,
@@ -111,7 +134,7 @@ jobs:
             core.setOutput('file', filePath);
 
       - name: Comment on issue
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           BRANCH: ${{ steps.prepare.outputs.branch }}
           FILE: ${{ steps.prepare.outputs.file }}
@@ -121,5 +144,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: ${{ inputs.issue_number }},
-              body: `Created branch \`${process.env.BRANCH}\` and added the draft at \`${process.env.FILE}\`.\n\nOpen a PR with \`Closes #${{ inputs.issue_number }}\` to link and close this issue.`,
+              body: `Created linked branch \`${process.env.BRANCH}\` and added the draft at \`${process.env.FILE}\`.\n\nOpen a PR with \`Closes #${{ inputs.issue_number }}\` to link and close this issue.`,
             });
